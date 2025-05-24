@@ -1,0 +1,22 @@
+node_modules
+# Keep environment variables out of version control
+.env
+
+# Prisma generated files
+/prisma/migrations/
+/prisma/*.db
+!prisma/schema.prisma
+
+
+# Build output
+dist/
+build/
+
+# TypeScript cache
+.ts-node/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
