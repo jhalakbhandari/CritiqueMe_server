@@ -15,8 +15,11 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  email      String   @unique
+  name       String?
+  password   String?
+  provider   String? // e.g., "google"
+  providerId String? // OAuth provider user ID
+  createdAt  DateTime @default(now())
 }
