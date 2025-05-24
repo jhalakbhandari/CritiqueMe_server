@@ -34,20 +34,28 @@ project-root/
 │ └── ...
 └── ...
 
-📦 Installation
+---
+
+## 📦 Installation
 git clone https://github.com/your-repo-name.git
 cd project-folder
 npm install
 
-▶️ Running the App
+---
+
+## ▶️ Running the App
 npx prisma generate
 npx prisma db push
 npm run dev
 
-📌 Notes
+---
+
+## 📌 Notes
 This project uses Prisma with a MongoDB provider.
 The Prisma client is initialized in config/prisma.ts.
 Authentication is handled in config/passport.ts using Google strategy.
 
-✅ TODO
+---
+
+## ✅ TODO
 
