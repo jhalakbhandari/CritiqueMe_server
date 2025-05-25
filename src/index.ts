@@ -23,7 +23,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use("/", routes);
+app.use("/api", routes);
 // Route with TypeScript types
 // app.get("/", (req: Request, res: Response) => {
 //   res.send("Hello from Express with TypeScript!");
