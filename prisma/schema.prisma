@@ -20,5 +20,16 @@ datasource db {
   provider       String?  // e.g., "google"
   providerId     String?  // OAuth provider user ID
   createdAt DateTime @default(now())
+}
 
+model Post {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  tags        String[]    // MongoDB supports array of strings
+  media       String
+  userId      String      @db.ObjectId    // assuming user _id is ObjectId in MongoDB
+  status      String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
