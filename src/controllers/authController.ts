@@ -12,5 +12,5 @@ export const handleGoogleCallback = (req: Request, res: Response): void => {
 
   // Redirect to frontend with token
   res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}`);
-  res.redirect(`${process.env.Frontend_URL}/auth/callback?token=${token}`);
+  // res.redirect(`${process.env.Frontend_URL}/auth/callback?token=${token}`);
 };
