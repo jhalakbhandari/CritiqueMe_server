@@ -2,7 +2,7 @@
 import express, { Request, Response } from "express";
 import passport from "passport";
 import jwt from "jsonwebtoken";
-import { handleGoogleCallback } from "../controllers/authController";
+import { handleGoogleCallback, handleLocalLogin } from "../controllers/authController";
 
 const router = express.Router();
 
@@ -21,5 +21,9 @@ router.get(
   }),
   handleGoogleCallback
 );
-
+router.post(
+  "/login",
+  passport.authenticate("local", { session: false }),
+  handleLocalLogin
+);
 export default router;
