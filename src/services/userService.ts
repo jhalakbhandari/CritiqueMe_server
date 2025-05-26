@@ -1,5 +1,8 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../config/prisma";
+import { ObjectId } from "mongodb";
+import { connectMongo } from "../config/mongo";
+import type { GridFSFile } from "mongodb";
 
 interface User {
   name: string;
@@ -36,3 +39,53 @@ export const createUser = async (userData: User) => {
 
   return userWithoutPassword;
 };
+
+//upload and get profile picture
+export async function uploadProfilePicture(userId: string, fileBuffer: Buffer) {
+  const { bucket } = await connectMongo();
+
+  return new Promise<string>((resolve, reject) => {
+    const uploadStream = bucket.openUploadStream(userId);
+    uploadStream.end(fileBuffer);
+
+    uploadStream.on("finish", async () => {
+      try {
+        const fileId = uploadStream.id?.toString(); // ✅ use stream id
+        if (!fileId) throw new Error("Upload failed: file ID not found");
+
+        await prisma.user.update({
+          where: { id: userId },
+          data: { profilePictureId: fileId },
+        });
+
+        resolve(fileId);
+      } catch (error) {
+        // delete if fileId exists
+        if (uploadStream.id) {
+          await bucket.delete(uploadStream.id);
+        }
+        reject(error);
+      }
+    });
+
+    uploadStream.on("error", (err) => {
+      reject(err);
+    });
+  });
+}
+
+export async function getProfilePictureStream(userId: string) {
+  const { bucket } = await connectMongo();
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (!user || !user.profilePictureId) {
+    return null;
+  }
+
+  try {
+    const fileId = new ObjectId(user.profilePictureId);
+    return bucket.openDownloadStream(fileId);
+  } catch {
+    return null;
+  }
+}

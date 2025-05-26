@@ -24,6 +24,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/api", routes);
+app.use(express.static("public"));
+
 // Route with TypeScript types
 // app.get("/", (req: Request, res: Response) => {
 //   res.send("Hello from Express with TypeScript!");
