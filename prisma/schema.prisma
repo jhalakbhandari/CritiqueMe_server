@@ -17,6 +17,7 @@ datasource db {
   email   String   @unique
   name    String?
   password String?
+  profilePictureId  String? // store GridFS file _id here as string
   provider       String?  // e.g., "google"
   providerId     String?  // OAuth provider user ID
   createdAt DateTime @default(now())
