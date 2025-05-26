@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { createUser } from "../services/userService";
 // import { createUser } from "../services/authService";
 
+//signup user
 export const handleUserSignup = async (
   req: Request,
   res: Response
@@ -26,3 +27,5 @@ export const handleUserSignup = async (
     return;
   }
 };
+
+//user profile properties update like phone number, email, password, profile picture, theme)

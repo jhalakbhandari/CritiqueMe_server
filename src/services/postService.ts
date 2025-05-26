@@ -1,4 +1,5 @@
 import { prisma } from "../config/prisma";
+import { UpdatePostInput } from "../types";
 
 interface Post {
   title: string;
@@ -25,4 +26,38 @@ export const createPost = async (postData: Post) => {
   });
 
   return newPost;
+};
+
+export const updateDraftPost = async (postData: UpdatePostInput) => {
+  const { id, title, description, tags, media, status } = postData;
+  // console.log(postData);
+  const updatedPost = await prisma.post.update({
+    where: { id },
+    data: {
+      title,
+      description,
+      tags,
+      media,
+      status,
+    },
+  });
+
+  return updatedPost;
+};
+
+// This just fetches the data from the database and returns it
+export const getAllPostsWithUsersFromDB = async () => {
+  const posts = await prisma.post.findMany({
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  return posts;
 };
