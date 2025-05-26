@@ -53,6 +53,22 @@ export async function uploadProfilePicture(userId: string, fileBuffer: Buffer) {
         const fileId = uploadStream.id?.toString(); // ✅ use stream id
         if (!fileId) throw new Error("Upload failed: file ID not found");
 
+        // Fetch user first to check for old image
+        const user = await prisma.user.findUnique({
+          where: { id: userId },
+        });
+
+        if (user?.profilePictureId) {
+          try {
+            await bucket.delete(new ObjectId(user.profilePictureId));
+            // console.log("Deleted old profile picture:", user.profilePictureId);
+          } catch (e) {
+            console.warn("Failed to delete old profile picture:", e);
+            // Not fatal — we continue
+          }
+        }
+
+        // Now update with new file ID
         await prisma.user.update({
           where: { id: userId },
           data: { profilePictureId: fileId },
