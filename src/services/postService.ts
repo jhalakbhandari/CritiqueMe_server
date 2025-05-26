@@ -1,5 +1,6 @@
 // Importing the initialized Prisma client instance from the config folder
 import { prisma } from "../config/prisma";
+import { UpdatePostInput } from "../types";
 
 // Define the structure of a Post object using a TypeScript interface
 interface Post {
@@ -30,4 +31,38 @@ export const createPost = async (postData: Post) => {
 
   // Return the newly created post
   return newPost;
+};
+
+export const updateDraftPost = async (postData: UpdatePostInput) => {
+  const { id, title, description, tags, media, status } = postData;
+  // console.log(postData);
+  const updatedPost = await prisma.post.update({
+    where: { id },
+    data: {
+      title,
+      description,
+      tags,
+      media,
+      status,
+    },
+  });
+
+  return updatedPost;
+};
+
+// This just fetches the data from the database and returns it
+export const getAllPostsWithUsersFromDB = async () => {
+  const posts = await prisma.post.findMany({
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  return posts;
 };
