@@ -52,6 +52,9 @@ npx prisma db push
 npm run dev
 
 ---
+## Running MongoDB
+"C:\Program Files\MongoDB\Server\8.0\bin\mongod.exe" --config "C:\Program Files\MongoDB\Server\8.0\mongod.cfg"
+"C:\Program Files\mongosh\bin\mongosh.exe"
 
 ## 📌 Notes
 

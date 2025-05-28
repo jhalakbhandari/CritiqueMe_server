@@ -50,6 +50,24 @@ export const updateDraftPost = async (postData: UpdatePostInput) => {
   return updatedPost;
 };
 
+/**
+ * Deletes a post by its ID from the database.
+ *
+ * @param postId - The ID of the post to delete
+ * @returns The deleted post data if successful, otherwise throws an error
+ */
+export const deletePost = async (postId: string) => {
+  try {
+    const deletedPost = await prisma.post.delete({
+      where: { id: postId },
+    });
+    return deletedPost;
+  } catch (error) {
+    console.error("Failed to delete post:", error);
+    throw error; // Let the caller handle the error
+  }
+};
+
 // This just fetches the data from the database and returns it
 export const getAllPostsWithUsersFromDB = async () => {
   const posts = await prisma.post.findMany({
