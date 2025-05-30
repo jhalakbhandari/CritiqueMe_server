@@ -33,5 +33,6 @@ app.use(express.static("public"));
 
 // Start the server
 app.listen(PORT, () => {
+  console.clear();// Add this in your entry point file, e.g., index.ts
   console.log(`Server is running on http://localhost:${PORT}`);
 });

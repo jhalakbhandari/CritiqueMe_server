@@ -2,6 +2,7 @@ import { Router } from "express";
 // import { handleUserSignup } from "../controllers/userController";
 import {
   getAllPostsWithUsers,
+  handleDeletePost,
   handleSubmitPost,
   handleUpdatePost,
 } from "../controllers/postController";
@@ -13,6 +14,7 @@ const router = Router();
 router.post("/", isAuthenticated, handleSubmitPost);
 
 //delete post
+router.delete("/:postId", isAuthenticated, handleDeletePost);
 
 //update post(draft post will be updated only)
 router.put("/:postId", isAuthenticated, handleUpdatePost);
