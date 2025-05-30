@@ -35,7 +35,6 @@ export const createPost = async (postData: Post) => {
 
 export const updateDraftPost = async (postData: UpdatePostInput) => {
   const { id, title, description, tags, media, status } = postData;
-  // console.log(postData);
   const updatedPost = await prisma.post.update({
     where: { id },
     data: {
@@ -63,6 +62,7 @@ export const deletePost = async (postId: string) => {
     });
     return deletedPost;
   } catch (error) {
+
     console.error("Failed to delete post:", error);
     throw error; // Let the caller handle the error
   }
@@ -82,5 +82,43 @@ export const getAllPostsWithUsersFromDB = async () => {
     },
   });
 
+  return posts;
+};
+
+/**
+ * Fetches all submitted posts created by a specific user.
+ *
+ * @param userId - The ID of the user whose posts need to be fetched
+ * @returns An array of posts belonging to the given user
+ */
+export const fetchPostsByUser = async (userId: string) => {
+  // Query the database to find all posts where the userId matches the provided one and status is public (submitted posts only)
+  const posts = await prisma.post.findMany({
+    where: {
+      userId: userId,
+      status: "public"
+    },
+  });
+
+  // Return the submitted fetched posts
+  return posts;
+};
+
+/**
+ * Fetches all draft posts created by a specific user.
+ *
+ * @param userId - The ID of the user whose draft posts need to be fetched
+ * @returns An array of posts belonging to the given user
+ */
+export const fetchDraftPostsByUser = async (userId: string) => {
+  // Query the database to find all posts where the userId matches the provided one and status is private (draft posts only)
+  const posts = await prisma.post.findMany({
+    where: {
+      userId: userId,
+      status: "private"
+    },
+  });
+
+  // Return the draft fetched posts
   return posts;
 };

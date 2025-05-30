@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import {
   createPost,
   deletePost,
+  fetchDraftPostsByUser,
+  fetchPostsByUser,
   getAllPostsWithUsersFromDB,
   updateDraftPost,
 } from "../services/postService";
@@ -52,8 +54,6 @@ export const handleDeletePost = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  // Type cast to get user from request if using custom AuthRequest interface
-  const user = (req as AuthRequest).user;
 
   try {
     const postId = req.params.postId;
@@ -106,7 +106,6 @@ export const handleUpdatePost = async (
       typeof tags === "string"
         ? tags.split(",").map((tag) => tag.trim())
         : tags;
-    // console.log(req.body);
 
     const updatedPost = await updateDraftPost(req.body);
 
@@ -138,6 +137,71 @@ export const getAllPostsWithUsers = async (
       .json({ error: "An error occurred while retrieving posts." });
   }
 };
+
 //get posts by userId to show on user personal feed will include only submitted posts
+export const getAllSubmittedPostsByUserId = async (req: Request,
+  res: Response): Promise<void> => {
+  try {
+    const userId = req.params.userId;
+
+    if (!userId) {
+      res.status(400).json({ error: "User ID is required." });
+      return;
+    }
+
+    // Attempt to fetch the public posts by user ID
+    const fetchedPosts = await fetchPostsByUser(userId);
+
+    if (!fetchedPosts) {
+      res.status(404).json({ error: "No submitted posts found for this user." });
+      return;
+    }
+
+    // Respond with success and fetched public post details
+    res.status(200).json({
+      message: "Submitted Posts fetched successfully.",
+      fetchedPosts,
+    });
+
+  }
+  catch (error) {
+    console.error("Error fetching submitted posts:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while retrieving submitted posts." });
+  }
+};
 
 //get posts by userId only draft posts
+export const getAllDraftPostsByUserId = async (req: Request,
+  res: Response): Promise<void> => {
+  try {
+    const userId = req.params.userId;
+
+    if (!userId) {
+      res.status(400).json({ error: "User ID is required." });
+      return;
+    }
+
+    // Attempt to fetch the draft posts by user ID
+    const fetchedDraftsPosts = await fetchDraftPostsByUser(userId);
+
+    if (!fetchedDraftsPosts) {
+      res.status(404).json({ error: "No draft posts found for this user." });
+      return;
+    }
+
+    // Respond with success and fetched draft post details
+    res.status(200).json({
+      message: "Draft Posts fetched successfully.",
+      fetchedDraftsPosts,
+    });
+
+  }
+  catch (error) {
+    console.error("Error fetching draft posts:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while retrieving draft posts." });
+  }
+};
