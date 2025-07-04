@@ -1,7 +1,9 @@
 import { Router } from "express";
 // import { handleUserSignup } from "../controllers/userController";
 import {
+  getAllDraftPostsByUserId,
   getAllPostsWithUsers,
+  getAllSubmittedPostsByUserId,
   handleDeletePost,
   handleSubmitPost,
   handleUpdatePost,
@@ -22,7 +24,9 @@ router.put("/:postId", isAuthenticated, handleUpdatePost);
 router.get("/", isAuthenticated, getAllPostsWithUsers);
 
 //get posts by userId to show on user personal feed will include only submitted posts
+router.get("/submitted/:userId", isAuthenticated, getAllSubmittedPostsByUserId);
 
 //get posts by userId only draft posts
+router.get("/draft/:userId", isAuthenticated, getAllDraftPostsByUserId);
 
 export default router;
