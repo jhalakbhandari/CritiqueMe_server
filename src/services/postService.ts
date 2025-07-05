@@ -6,10 +6,10 @@ import { UpdatePostInput } from "../types";
 interface Post {
   title: string;
   description: string;
-  tags: string[];      // Array of tags associated with the post
-  media: string;       // URL or reference to media content (image/video)
-  userId: string;      // ID of the user who created the post
-  status: string;      // Status of the post (e.g., 'published', 'draft')
+  tags: string[]; // Array of tags associated with the post
+  media: string; // URL or reference to media content (image/video)
+  userId: string; // ID of the user who created the post
+  status: string; // Status of the post (e.g., 'published', 'draft')
 }
 
 // Asynchronous function to create a new post in the database
@@ -62,7 +62,6 @@ export const deletePost = async (postId: string) => {
     });
     return deletedPost;
   } catch (error) {
-
     console.error("Failed to delete post:", error);
     throw error; // Let the caller handle the error
   }
@@ -96,7 +95,7 @@ export const fetchPostsByUser = async (userId: string) => {
   const posts = await prisma.post.findMany({
     where: {
       userId: userId,
-      status: "public"
+      status: "public",
     },
   });
 
@@ -115,10 +114,77 @@ export const fetchDraftPostsByUser = async (userId: string) => {
   const posts = await prisma.post.findMany({
     where: {
       userId: userId,
-      status: "private"
+      status: "private",
     },
   });
 
   // Return the draft fetched posts
   return posts;
+};
+
+export const handleLikePosts = async (userId: string, postId: string) => {
+  // Check if the like already exists
+  const existing = await prisma.like.findFirst({
+    where: {
+      postId,
+      userId,
+    },
+  });
+
+  if (existing) {
+    // If exists, remove the like (unlike)
+    await prisma.like.delete({
+      where: {
+        id: existing.id,
+      },
+    });
+
+    return { liked: false };
+  }
+
+  // If not, create a like
+  await prisma.like.create({
+    data: {
+      postId,
+      userId,
+    },
+  });
+
+  return { liked: true };
+};
+
+export const handleCommentOnPosts = async (
+  userId: string,
+  postId: string,
+  text: string
+) => {
+  // Create a new comment
+  const comment = await prisma.comment.create({
+    data: {
+      text,
+      postId,
+      userId: userId,
+    },
+  });
+
+  return { success: true, comment };
+};
+/**
+ * Fetches all comments on a specific post.
+ *
+ * @param postId - ID of the post to fetch comments for
+ * @returns An object containing a success flag and an array of comments
+ */
+export const handleGetCommentsOnPost = async (postId: string) => {
+  const comments = await prisma.comment.findMany({
+    where: { postId },
+    orderBy: { createdAt: "asc" },
+    include: {
+      user: {
+        select: { name: true, id: true }, // Adjust field name if needed
+      },
+    },
+  });
+
+  return { success: true, comments };
 };

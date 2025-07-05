@@ -4,7 +4,10 @@ import {
   getAllDraftPostsByUserId,
   getAllPostsWithUsers,
   getAllSubmittedPostsByUserId,
+  handleCommentOnPost,
   handleDeletePost,
+  handleGetCommentsOnPosts,
+  handleLikePost,
   handleSubmitPost,
   handleUpdatePost,
 } from "../controllers/postController";
@@ -28,5 +31,10 @@ router.get("/submitted/:userId", isAuthenticated, getAllSubmittedPostsByUserId);
 
 //get posts by userId only draft posts
 router.get("/draft/:userId", isAuthenticated, getAllDraftPostsByUserId);
+
+router.post("/:id/like", handleLikePost);
+// POST /api/posts/:id/comment
+router.post("/:id/comment", handleCommentOnPost);
+router.get("/:postId/comments", handleGetCommentsOnPosts);
 
 export default router;

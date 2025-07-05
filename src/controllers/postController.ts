@@ -5,6 +5,9 @@ import {
   fetchDraftPostsByUser,
   fetchPostsByUser,
   getAllPostsWithUsersFromDB,
+  handleCommentOnPosts,
+  handleGetCommentsOnPost,
+  handleLikePosts,
   updateDraftPost,
 } from "../services/postService";
 import { AuthRequest } from "../types";
@@ -54,7 +57,6 @@ export const handleDeletePost = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-
   try {
     const postId = req.params.postId;
 
@@ -76,7 +78,6 @@ export const handleDeletePost = async (
       message: "Post deleted successfully.",
       deletedPost,
     });
-
   } catch (error) {
     console.error("Error deleting post:", error);
     res.status(500).json({
@@ -139,8 +140,10 @@ export const getAllPostsWithUsers = async (
 };
 
 //get posts by userId to show on user personal feed will include only submitted posts
-export const getAllSubmittedPostsByUserId = async (req: Request,
-  res: Response): Promise<void> => {
+export const getAllSubmittedPostsByUserId = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const userId = req.params.userId;
 
@@ -153,7 +156,9 @@ export const getAllSubmittedPostsByUserId = async (req: Request,
     const fetchedPosts = await fetchPostsByUser(userId);
 
     if (!fetchedPosts) {
-      res.status(404).json({ error: "No submitted posts found for this user." });
+      res
+        .status(404)
+        .json({ error: "No submitted posts found for this user." });
       return;
     }
 
@@ -162,9 +167,7 @@ export const getAllSubmittedPostsByUserId = async (req: Request,
       message: "Submitted Posts fetched successfully.",
       fetchedPosts,
     });
-
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error fetching submitted posts:", error);
     res
       .status(500)
@@ -173,8 +176,10 @@ export const getAllSubmittedPostsByUserId = async (req: Request,
 };
 
 //get posts by userId only draft posts
-export const getAllDraftPostsByUserId = async (req: Request,
-  res: Response): Promise<void> => {
+export const getAllDraftPostsByUserId = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const userId = req.params.userId;
 
@@ -196,12 +201,96 @@ export const getAllDraftPostsByUserId = async (req: Request,
       message: "Draft Posts fetched successfully.",
       fetchedDraftsPosts,
     });
-
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Error fetching draft posts:", error);
     res
       .status(500)
       .json({ error: "An error occurred while retrieving draft posts." });
+  }
+};
+
+export const handleLikePost = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.body.userId;
+    const postId = req.params.id;
+
+    if (!userId || !postId) {
+      res.status(400).json({ error: "User ID and Post ID are required." });
+      return;
+    }
+
+    const result = await handleLikePosts(userId, postId);
+
+    res.status(200).json({
+      message: result.liked ? "Post liked." : "Post unliked.",
+      ...result,
+    });
+  } catch (error) {
+    console.error("Error liking/unliking post:", error);
+    res.status(500).json({ error: "Something went wrong while liking post." });
+  }
+};
+export const handleCommentOnPost = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { text, userId } = req.body;
+    const postId = req.params.id;
+
+    if (!userId || !postId || !text) {
+      res
+        .status(400)
+        .json({ error: "User ID, Post ID, and comment text are required." });
+      return;
+    }
+
+    // Correct order: userId, postId, text
+    const result = await handleCommentOnPosts(userId, postId, text);
+
+    res.status(200).json({
+      message: "Comment added successfully.",
+      ...result,
+    });
+  } catch (error) {
+    console.error("Error commenting on post:", error);
+    res
+      .status(500)
+      .json({ error: "Something went wrong while commenting on post." });
+  }
+};
+
+/**
+ * Fetches all comments on a specific post.
+ *
+ * @param req - Express request containing the post ID in params
+ * @param res - Express response returning the list of comments
+ */
+export const handleGetCommentsOnPosts = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { postId } = req.params;
+    // console.log("id", postId);
+
+    if (!postId) {
+      res.status(400).json({ error: "Post ID is required." });
+      return;
+    }
+
+    const comments = await handleGetCommentsOnPost(postId);
+    res.status(200).json({
+      message: "Comments fetched successfully.",
+      comments,
+    });
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    res
+      .status(500)
+      .json({ error: "Something went wrong while fetching comments." });
   }
 };

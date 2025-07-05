@@ -16,7 +16,7 @@ router.post("/signup", handleUserSignup);
 //pf get and upload
 router.post(
   "/:id/profile-picture",
-  upload.single("profilePic"),
+  upload.single("file"),
   uploadProfilePictureHandler
 );
 
