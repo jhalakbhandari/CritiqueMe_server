@@ -11,7 +11,7 @@ const PORT = 3000;
 
 // Middleware
 // app.use(express.json());
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cors({ origin: process.env.Frontend_URL, credentials: true }));
 app.use(express.json());
 app.use(
   session({
@@ -33,6 +33,6 @@ app.use(express.static("public"));
 
 // Start the server
 app.listen(PORT, () => {
-  console.clear();// Add this in your entry point file, e.g., index.ts
+  console.clear(); // Add this in your entry point file, e.g., index.ts
   console.log(`Server is running on http://localhost:${PORT}`);
 });
