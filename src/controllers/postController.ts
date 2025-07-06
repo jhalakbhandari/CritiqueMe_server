@@ -11,6 +11,7 @@ import {
   updateDraftPost,
 } from "../services/postService";
 import { AuthRequest } from "../types";
+import { getDraftPostsByUserIdFromDB } from "../services/userService";
 //create post
 export const handleSubmitPost = async (
   req: Request,
@@ -128,7 +129,8 @@ export const getAllPostsWithUsers = async (
   res: Response
 ): Promise<void> => {
   try {
-    const posts = await getAllPostsWithUsersFromDB();
+    const userId = req.query.userId as string;
+    const posts = await getAllPostsWithUsersFromDB(userId);
 
     res.status(200).json({ posts });
   } catch (error) {
@@ -292,5 +294,16 @@ export const handleGetCommentsOnPosts = async (
     res
       .status(500)
       .json({ error: "Something went wrong while fetching comments." });
+  }
+};
+
+export const getDraftPostsByUserId = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const posts = await getDraftPostsByUserIdFromDB(userId);
+    res.json(posts);
+  } catch (error) {
+    console.error("Error fetching draft posts:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

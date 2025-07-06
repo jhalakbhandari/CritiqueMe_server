@@ -68,20 +68,21 @@ export const deletePost = async (postId: string) => {
 };
 
 // This just fetches the data from the database and returns it
-export const getAllPostsWithUsersFromDB = async () => {
+export const getAllPostsWithUsersFromDB = async (currentUserId: string) => {
   const posts = await prisma.post.findMany({
     include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
+      user: true,
+      likes: {
+        where: { userId: currentUserId },
+        select: { id: true }, // Just check existence
       },
     },
   });
 
-  return posts;
+  return posts.map((post) => ({
+    ...post,
+    isLikedInitially: post.likes.length > 0,
+  }));
 };
 
 /**
@@ -187,4 +188,24 @@ export const handleGetCommentsOnPost = async (postId: string) => {
   });
 
   return { success: true, comments };
+};
+export const searchUsersService = async (query: string) => {
+  // console.log("🔍 Searching for:", query); // ADD THIS
+
+  const users = await prisma.user.findMany({
+    where: {
+      OR: [
+        { name: { contains: query, mode: "insensitive" } },
+        { email: { contains: query, mode: "insensitive" } },
+      ],
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      // profilePic: true,
+    },
+  });
+
+  return users;
 };

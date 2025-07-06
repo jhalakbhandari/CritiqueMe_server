@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
 import {
+  checkFollowStatusService,
   createUser,
+  getDraftPostsByUserIdFromDB,
   getProfilePictureStream,
+  getUserProfileWithPosts,
+  toggleFollowService,
   uploadProfilePicture,
 } from "../services/userService";
+import { searchUsersService } from "../services/postService";
 
 // import { createUser } from "../services/authService";
 
@@ -61,7 +66,9 @@ export async function uploadProfilePictureHandler(
 
 export async function getProfilePictureHandler(req: Request, res: Response) {
   const userId = req.params.id;
-
+  if (!userId) {
+    return;
+  }
   try {
     const downloadStream = await getProfilePictureStream(userId);
 
@@ -80,3 +87,81 @@ export async function getProfilePictureHandler(req: Request, res: Response) {
     res.redirect("/default-profile.png");
   }
 }
+
+export const searchUsersController = async (req: Request, res: Response) => {
+  const query = req.query.q?.toString() || "";
+
+  try {
+    const users = await searchUsersService(query);
+    res.status(200).json(users);
+  } catch (err) {
+    console.error("Search error:", err);
+    res.status(500).json({ error: "Failed to search users" });
+  }
+};
+export const getUserProfile = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const userId = req.params.id;
+
+  try {
+    const user = await getUserProfileWithPosts(userId);
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    console.error("Error fetching user profile:", err);
+    res.status(500).json({ error: "Failed to load profile" });
+  }
+};
+
+export const toggleFollowController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const followerId = req.body.followerId;
+  const followingId = req.params.id;
+
+  if (!followerId || !followingId) {
+    res.status(400).json({ error: "Missing followerId or followingId" });
+    return;
+  }
+
+  try {
+    const result = await toggleFollowService(followerId, followingId);
+    res.json({ message: result });
+  } catch (err) {
+    console.error("❌ Error toggling follow:", err);
+    res.status(500).json({ error: "Failed to toggle follow status" });
+  }
+};
+
+export const checkFollowStatusController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const targetUserId = req.params.targetUserId;
+  const currentUserId = req.query.currentUserId as string;
+
+  if (!targetUserId || !currentUserId) {
+    res.status(400).json({ error: "Missing user IDs" });
+    return;
+  }
+
+  try {
+    const isFollowing = await checkFollowStatusService(
+      currentUserId,
+      targetUserId
+    );
+    res.status(200).json({ isFollowing });
+    return;
+  } catch (error) {
+    console.error("❌ Follow status error:", error);
+    res.status(500).json({ error: "Server error" });
+    return;
+  }
+};

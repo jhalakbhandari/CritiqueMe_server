@@ -4,6 +4,7 @@ import {
   getAllDraftPostsByUserId,
   getAllPostsWithUsers,
   getAllSubmittedPostsByUserId,
+  getDraftPostsByUserId,
   handleCommentOnPost,
   handleDeletePost,
   handleGetCommentsOnPosts,
@@ -36,5 +37,6 @@ router.post("/:id/like", handleLikePost);
 // POST /api/posts/:id/comment
 router.post("/:id/comment", handleCommentOnPost);
 router.get("/:postId/comments", handleGetCommentsOnPosts);
+router.get("/drafts/:userId", getDraftPostsByUserId);
 
 export default router;

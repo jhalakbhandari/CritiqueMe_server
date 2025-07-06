@@ -1,7 +1,11 @@
 import { Router } from "express";
 import {
+  checkFollowStatusController,
   getProfilePictureHandler,
+  getUserProfile,
   handleUserSignup,
+  searchUsersController,
+  toggleFollowController,
   uploadProfilePictureHandler,
 } from "../controllers/userController";
 import multer from "multer";
@@ -21,5 +25,9 @@ router.post(
 );
 
 router.get("/:id/profile-picture", getProfilePictureHandler);
+router.get("/search", searchUsersController);
+router.get("/profile/:id", getUserProfile);
+router.post("/follow/:id", toggleFollowController);
+router.get("/follow-status/:targetUserId", checkFollowStatusController);
 
 export default router;

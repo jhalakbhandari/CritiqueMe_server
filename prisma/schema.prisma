@@ -25,6 +25,8 @@ datasource db {
   posts      Post[]   @relation("UserPosts")
   comments Comment[]
   likes    Like[]
+   followers      Follows[] @relation("followers")
+  following      Follows[] @relation("following")
 
 }
 
@@ -40,7 +42,7 @@ model Post {
   updatedAt   DateTime    @updatedAt
  likes     Like[]
   comments  Comment[]
-  user        User     @relation("UserPosts", fields: [userId], references: [id])
+  user        User?     @relation("UserPosts", fields: [userId], references: [id])
 
 }
 model Like {
@@ -60,4 +62,13 @@ model Comment {
   userId  String   @db.ObjectId
   text      String
   createdAt DateTime @default(now())
+}
+model Follows {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  follower     User     @relation("following", fields: [followerId], references: [id])
+  followerId   String
+  following    User     @relation("followers", fields: [followingId], references: [id])
+  followingId  String
+
+  @@unique([followerId, followingId])
 }

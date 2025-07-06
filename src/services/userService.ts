@@ -91,6 +91,9 @@ export async function uploadProfilePicture(userId: string, fileBuffer: Buffer) {
 }
 
 export async function getProfilePictureStream(userId: string) {
+  if (!userId || userId === "undefined") {
+    return null;
+  }
   const { bucket } = await connectMongo();
   const user = await prisma.user.findUnique({ where: { id: userId } });
 
@@ -100,8 +103,74 @@ export async function getProfilePictureStream(userId: string) {
 
   try {
     const fileId = new ObjectId(user.profilePictureId);
+
     return bucket.openDownloadStream(fileId);
   } catch {
     return null;
   }
 }
+export const getUserProfileWithPosts = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      posts: {
+        orderBy: { createdAt: "desc" },
+      },
+      followers: true,
+      following: true,
+    },
+  });
+
+  return user;
+};
+
+export const toggleFollowService = async (
+  followerId: string,
+  followingId: string
+) => {
+  const existingFollow = await prisma.follows.findFirst({
+    where: { followerId, followingId },
+  });
+
+  if (existingFollow) {
+    await prisma.follows.delete({ where: { id: existingFollow.id } });
+    return "Unfollowed";
+  } else {
+    await prisma.follows.create({
+      data: { followerId, followingId },
+    });
+    return "Followed";
+  }
+};
+
+export const checkFollowStatusService = async (
+  currentUserId: string,
+  targetUserId: string
+): Promise<boolean> => {
+  const follow = await prisma.follows.findFirst({
+    where: {
+      followerId: currentUserId,
+      followingId: targetUserId,
+    },
+  });
+
+  return !!follow;
+};
+
+export const getDraftPostsByUserIdFromDB = async (userId: string) => {
+  const posts = await prisma.post.findMany({
+    where: {
+      userId,
+      status: "private",
+    },
+    include: {
+      user: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  // Add "status: private" to each draft post
+  return posts;
+};
