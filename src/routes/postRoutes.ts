@@ -1,7 +1,7 @@
 import { Router } from "express";
 // import { handleUserSignup } from "../controllers/userController";
 import {
-  getAllDraftPostsByUserId,
+  // getAllDraftPostsByUserId,
   getAllPostsWithUsers,
   getAllSubmittedPostsByUserId,
   getDraftPostsByUserId,
@@ -31,7 +31,7 @@ router.get("/", isAuthenticated, getAllPostsWithUsers);
 router.get("/submitted/:userId", isAuthenticated, getAllSubmittedPostsByUserId);
 
 //get posts by userId only draft posts
-router.get("/draft/:userId", isAuthenticated, getAllDraftPostsByUserId);
+// router.get("/draft/:userId", isAuthenticated, getAllDraftPostsByUserId);
 
 router.post("/:id/like", handleLikePost);
 // POST /api/posts/:id/comment

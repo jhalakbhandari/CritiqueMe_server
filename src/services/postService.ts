@@ -70,6 +70,7 @@ export const deletePost = async (postId: string) => {
 // This just fetches the data from the database and returns it
 export const getAllPostsWithUsersFromDB = async (currentUserId: string) => {
   const posts = await prisma.post.findMany({
+    where: { status: "public" },
     include: {
       user: true,
       likes: {
@@ -98,6 +99,9 @@ export const fetchPostsByUser = async (userId: string) => {
       userId: userId,
       status: "public",
     },
+    include: {
+      user: true,
+    },
   });
 
   // Return the submitted fetched posts
@@ -110,18 +114,18 @@ export const fetchPostsByUser = async (userId: string) => {
  * @param userId - The ID of the user whose draft posts need to be fetched
  * @returns An array of posts belonging to the given user
  */
-export const fetchDraftPostsByUser = async (userId: string) => {
-  // Query the database to find all posts where the userId matches the provided one and status is private (draft posts only)
-  const posts = await prisma.post.findMany({
-    where: {
-      userId: userId,
-      status: "private",
-    },
-  });
+// export const fetchDraftPostsByUser = async (userId: string) => {
+//   // Query the database to find all posts where the userId matches the provided one and status is private (draft posts only)
+//   const posts = await prisma.post.findMany({
+//     where: {
+//       userId: userId,
+//       status: "private",
+//     },
+//   });
 
-  // Return the draft fetched posts
-  return posts;
-};
+//   // Return the draft fetched posts
+//   return posts;
+// };
 
 export const handleLikePosts = async (userId: string, postId: string) => {
   // Check if the like already exists

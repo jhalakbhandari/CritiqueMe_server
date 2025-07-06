@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import {
   createPost,
   deletePost,
-  fetchDraftPostsByUser,
   fetchPostsByUser,
   getAllPostsWithUsersFromDB,
   handleCommentOnPosts,
@@ -177,39 +176,39 @@ export const getAllSubmittedPostsByUserId = async (
   }
 };
 
-//get posts by userId only draft posts
-export const getAllDraftPostsByUserId = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const userId = req.params.userId;
+// //get posts by userId only draft posts
+// export const getAllDraftPostsByUserId = async (
+//   req: Request,
+//   res: Response
+// ): Promise<void> => {
+//   try {
+//     const userId = req.params.userId;
 
-    if (!userId) {
-      res.status(400).json({ error: "User ID is required." });
-      return;
-    }
+//     if (!userId) {
+//       res.status(400).json({ error: "User ID is required." });
+//       return;
+//     }
 
-    // Attempt to fetch the draft posts by user ID
-    const fetchedDraftsPosts = await fetchDraftPostsByUser(userId);
+//     // Attempt to fetch the draft posts by user ID
+//     const fetchedDraftsPosts = await fetchDraftPostsByUser(userId);
 
-    if (!fetchedDraftsPosts) {
-      res.status(404).json({ error: "No draft posts found for this user." });
-      return;
-    }
+//     if (!fetchedDraftsPosts) {
+//       res.status(404).json({ error: "No draft posts found for this user." });
+//       return;
+//     }
 
-    // Respond with success and fetched draft post details
-    res.status(200).json({
-      message: "Draft Posts fetched successfully.",
-      fetchedDraftsPosts,
-    });
-  } catch (error) {
-    console.error("Error fetching draft posts:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while retrieving draft posts." });
-  }
-};
+// Respond with success and fetched draft post details
+//     res.status(200).json({
+//       message: "Draft Posts fetched successfully.",
+//       fetchedDraftsPosts,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching draft posts:", error);
+//     res
+//       .status(500)
+//       .json({ error: "An error occurred while retrieving draft posts." });
+//   }
+// };
 
 export const handleLikePost = async (
   req: Request,
