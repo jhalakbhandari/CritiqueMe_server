@@ -31,6 +31,7 @@ export const createUser = async (userData: User) => {
       name,
       email,
       password: hashedPassword,
+      role: "user",
     },
   });
 

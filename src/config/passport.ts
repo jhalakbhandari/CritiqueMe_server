@@ -61,6 +61,7 @@ passport.use(
               name: profile.displayName,
               provider: "google",
               providerId: profile.id,
+              role: "user",
             },
           });
         }
