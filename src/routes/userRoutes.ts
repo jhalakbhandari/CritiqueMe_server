@@ -4,6 +4,7 @@ import {
   getProfilePictureHandler,
   getUserProfile,
   handleUserSignup,
+  handleUserUpdate,
   searchUsersController,
   toggleFollowController,
   uploadProfilePictureHandler,
@@ -14,6 +15,7 @@ const router = Router();
 const upload = multer();
 
 router.post("/signup", handleUserSignup);
+router.post("/user-update", handleUserUpdate);
 
 //user profile properties update like phone number, email, password, profile picture, theme)
 

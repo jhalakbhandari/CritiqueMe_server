@@ -4,6 +4,8 @@ import session from "express-session";
 import passport from "./config/passport";
 import routes from "./routes";
 import cors from "cors";
+import cron from "node-cron";
+import { cleanupOrphanedData } from "./services/cleanUpService";
 
 dotenv.config();
 const app = express();
@@ -30,6 +32,9 @@ app.use(express.static("public"));
 // app.get("/", (req: Request, res: Response) => {
 //   res.send("Hello from Express with TypeScript!");
 // });
+
+//Clean unused data from db
+
 
 // Start the server
 app.listen(PORT, () => {
